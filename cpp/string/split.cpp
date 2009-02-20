@@ -25,3 +25,20 @@ std::vector<std::string> split(const std::string &s, char delim) {
     split(s, delim, elems);
     return elems;
 }
+
+int main()
+{
+	// read txt file and split text lines
+	String imageListName("list.txt");
+	ifstream listFile(imageListName);
+
+	string content((istreambuf_iterator<char>(listFile)),
+		(istreambuf_iterator<char>()));
+
+	vector<string> imageList = split(content, '\n');
+
+	for (int i = 0; i < imageList.size(); i++) {
+		// operations
+	}
+	return 0;
+}

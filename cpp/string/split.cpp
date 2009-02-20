@@ -38,6 +38,7 @@ int main()
 	vector<string> imageList = split(content, '\n');
 
 	for (int i = 0; i < imageList.size(); i++) {
+		vector<string> elems = split(imageList[roiIdx], '\\');
 		// operations
 	}
 	return 0;

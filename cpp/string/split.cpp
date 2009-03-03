@@ -29,7 +29,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
 int main()
 {
 	// read txt file and split text lines
-	String imageListName("list.txt");
+	string imageListName("list.txt");
 	ifstream listFile(imageListName);
 
 	string content((istreambuf_iterator<char>(listFile)),
@@ -38,7 +38,7 @@ int main()
 	vector<string> imageList = split(content, '\n');
 
 	for (int i = 0; i < imageList.size(); i++) {
-		vector<string> elems = split(imageList[roiIdx], '\\');
+		vector<string> elems = split(imageList[i], '\\');
 		// operations
 	}
 	return 0;

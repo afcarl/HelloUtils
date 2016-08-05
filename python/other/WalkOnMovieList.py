@@ -24,23 +24,25 @@ movie_dir_map = [
 ]
 
 def getdirsize(dir):
-    size = 0L
+    # size = 0L
+    size = 0
     for root, dirs, files in os.walk(dir):
-        print "{},{},{}".format(root, dirs, files)
+        print("{},{},{}".format(root, dirs, files))
         size += sum([getsize(join(root, name)) for name in files])
         return size
 
 def preprocess_md_file(md_file):
     cur_year = time.strftime('%Y',time.localtime(time.time()))
     cur_month = time.strftime('%m',time.localtime(time.time()))
-    cur_month_abbr = time.strftime('%b',time.localtime(time.time()))
+    # cur_month_abbr = time.strftime('%b',time.localtime(time.time()))
     cur_day = time.strftime('%d',time.localtime(time.time()))
 
     md_file.write('---\n')
     md_file.write('layout: post\n')
     md_file.write('categories: leisure\n')
     md_file.write('title: My Movie Collections\n')
-    md_file.write('date: 2015-07-04\n')
+    md_file.write('date: {:d}-{:d}-{:d}\n'.format(int(cur_year), int(cur_month), int(cur_day)))
+    # md_file.write('date: 2015-07-04\n')
     md_file.write('---\n\n')
 
 if __name__ == '__main__':
@@ -62,7 +64,7 @@ if __name__ == '__main__':
             filesize = 0
             if os.path.isdir(filepath):
                 filesize = getdirsize(filepath)
-                print '({:d}) {:s} [{:.2f}G]'.format(movie_cnt, line, float(filesize)/1024/1024/1024)
+                print('({:d}) {:s} [{:.2f}G]'.format(movie_cnt, line, float(filesize)/1024/1024/1024))
 
                 movie_cnt += 1
                 write_line = '({:d}) {:s} [{:.2f}G]  <br />\n'.format(movie_cnt, line, float(filesize)/1024/1024/1024)

@@ -1,3 +1,4 @@
+import os
 import os.path as osp
 import cv2
 import xml.etree.ElementTree as ET
@@ -5,23 +6,33 @@ import xml.etree.ElementTree as ET
 GREEN = (0, 255, 0) # pos
 RED = (0, 0, 255) # neg
 
-task = 'val2'
-draw_gt_box = False
+#task = 'val2'
+task = 'test'
+ssd_version = 'ssd_v5'
+caffe_iter = '500000'
+draw_gt_box = True
 draw_pred_box = True
+if task == 'test':
+    draw_gt_box = False
+
+ilsvrc_root_dir = '/path/to/data/ILSVRC'
+saving_root_dir = '/path/to/ilsvrc_det_result'
+
+data_root_dir = osp.join(ilsvrc_root_dir, 'Data/DET')
+anno_root_dir = osp.join(ilsvrc_root_dir, 'Annotations/DET')
+
+image_dir = osp.join(data_root_dir, task)
+annotation_dir = osp.join(anno_root_dir, task)
+if task == 'val2':
+    image_dir = osp.join(data_root_dir, 'val')
+    annotation_dir = osp.join(anno_root_dir, 'val')
+
+image_with_anno_dir = osp.join(saving_root_dir, task)
+saving_dir = osp.join(saving_root_dir, task + '_' + ssd_version + '_' + caffe_iter)
 
 det_200_labelmap_file = 'det_200_labelmap.txt'
-image_name_list = 'val2.txt'
-#image_name_list = 'test.txt'
-image_dir = '/path/to/data/ILSVRC/Data/DET/val/'
-#image_dir = '/path/to/data/ILSVRC/Data/DET/test/'
-annotation_dir = '/path/to/data/ILSVRC/Annotations/DET/val/'
-#annotation_dir = '/path/to/data/ILSVRC/Annotations/DET/test/'
-out_file = 'eval_outfile_val2.txt'
-#out_file = 'eval_outfile_test.txt'
-image_with_anno_dir = '/path/to/ilsvrc_det_result/val2/'
-#image_with_anno_dir = '/path/to/ilsvrc_det_result/test/'
-saving_dir = '/path/to/ilsvrc_det_result/val2_ssd_v5_500000/'
-#saving_dir = '/path/to/ilsvrc_det_result/test_ssd_v5_500000/'
+image_name_list = task + '.txt'
+out_file = 'ssd_detect_outfile_' + task + '.txt'
 
 def parse_xml(filename):
     """ Parse a ILSVRC 2015 DET xml file """
@@ -52,6 +63,13 @@ def read_det_200_labelmap(filename):
     return name_to_labelidx, labelidx_to_name
 
 if __name__ == '__main__':
+    print image_with_anno_dir
+    print saving_dir
+    if osp.exists(image_with_anno_dir) == False:
+        os.mkdir(image_with_anno_dir)
+    if osp.exists(saving_dir) == False:
+        os.mkdir(saving_dir)
+
     det_200_name_to_labelmap, det_200_labelmap_to_name = read_det_200_labelmap(det_200_labelmap_file)
 
     image_list_file = open(image_name_list, 'r')
@@ -89,8 +107,8 @@ if __name__ == '__main__':
             cv2.imwrite(save_path, image)
 
             #if len(bbox_object) > 1:
-                #print('  bbox_object: {}'.format(len(bbox_object)))
-                #break
+            #    print('  bbox_object: {}'.format(len(bbox_object)))
+            #    break
 
     if draw_pred_box:
         predict_file = open(out_file, 'r')
@@ -102,7 +120,8 @@ if __name__ == '__main__':
             image_path, label_idx, score, xmin0, ymin0, xmax0, ymax0 = item.split(' ')
             image_name = image_path.split('/')[-1]
 
-            print('Create predicted bbox image {}: {}'.format(idx, image_name))
+            print('Create predicted bbox image {} / {}: {}'.format(idx+1, len(list_items), image_name))
+            #print('image path: {}'.format(image_path))
 
             display_name = det_200_labelmap_to_name[str(label_idx)]['display_name']
             xmin = int(xmin0)
@@ -113,6 +132,8 @@ if __name__ == '__main__':
             image_with_anno_path = osp.join(image_with_anno_dir, image_name)
             image_saving_path = osp.join(saving_dir, image_name)
             image_to_open = image_with_anno_path
+            if task == 'test':
+                image_to_open = image_path
             if osp.isfile(image_saving_path):
                 image_to_open = image_saving_path
 

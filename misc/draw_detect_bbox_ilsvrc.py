@@ -18,10 +18,10 @@ annotation_dir = '/path/to/data/ILSVRC/Annotations/DET/val/'
 #annotation_dir = '/path/to/data/ILSVRC/Annotations/DET/test/'
 out_file = 'eval_outfile_val2.txt'
 #out_file = 'eval_outfile_test.txt'
-image_with_anno_dir = '/path/to/jinbin.lin/ilsvrc_det_result/val2/'
-#image_with_anno_dir = '/path/to/jinbin.lin/ilsvrc_det_result/test/'
-saving_dir = '/path/to/jinbin.lin/ilsvrc_det_result/val2_ssd_v5_500000/'
-#saving_dir = '/path/to/jinbin.lin/ilsvrc_det_result/test_ssd_v5_500000/'
+image_with_anno_dir = '/path/to/ilsvrc_det_result/val2/'
+#image_with_anno_dir = '/path/to/ilsvrc_det_result/test/'
+saving_dir = '/path/to/ilsvrc_det_result/val2_ssd_v5_500000/'
+#saving_dir = '/path/to/ilsvrc_det_result/test_ssd_v5_500000/'
 
 def parse_xml(filename):
     """ Parse a ILSVRC 2015 DET xml file """

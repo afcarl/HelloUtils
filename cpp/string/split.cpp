@@ -5,7 +5,7 @@
 //http://stackoverflow.com/questions/236129/split-a-string-in-c
 
 /********************************\
-Note that this solution does not skip empty tokens, 
+Note that this solution does not skip empty tokens,
 so the following will find 4 items, one of which is empty:
 
 std::vector<std::string> x = split("one:two::three", ':');
@@ -28,18 +28,18 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 int main()
 {
-	// read txt file and split text lines
-	string imageListName("list.txt");
-	ifstream listFile(imageListName);
+    // read txt file and split text lines
+    string imageListName("list.txt");
+    ifstream listFile(imageListName);
 
-	string content((istreambuf_iterator<char>(listFile)),
-		(istreambuf_iterator<char>()));
+    string content((istreambuf_iterator<char>(listFile)),
+        (istreambuf_iterator<char>()));
 
-	vector<string> imageList = split(content, '\n');
+    vector<string> imageList = split(content, '\n');
 
-	for (int i = 0; i < imageList.size(); i++) {
-		vector<string> elems = split(imageList[i], '\\');
-		// operations
-	}
-	return 0;
+    for (int i = 0; i < imageList.size(); i++) {
+        vector<string> elems = split(imageList[i], '\\');
+        // operations
+    }
+    return 0;
 }

@@ -3,23 +3,31 @@ import os.path as osp
 import cv2
 import xml.etree.ElementTree as ET
 
+#import pdb
+
 GREEN = (0, 255, 0) # pos
 RED = (0, 0, 255) # neg
 
-#task = 'val2'
-task = 'test'
+CURDIR = os.path.dirname(os.path.realpath(__file__))
+
+task = 'val2'
+#task = 'test'
 ssd_version = 'ssd_v5'
-caffe_iter = '500000'
-draw_gt_box = True
+caffe_iter = '440000'
+draw_gt_box = False
 draw_pred_box = True
 if task == 'test':
     draw_gt_box = False
 
-ilsvrc_root_dir = '/path/to/data/ILSVRC'
+# if true, read results from score_file; else, read results from ssd_detect.cpp result file
+use_score_result = True
+
+ilsvrc_root_dir = '/path/to/ILSVRC'
 saving_root_dir = '/path/to/ilsvrc_det_result'
 
 data_root_dir = osp.join(ilsvrc_root_dir, 'Data/DET')
 anno_root_dir = osp.join(ilsvrc_root_dir, 'Annotations/DET')
+imageset_root_dir = osp.join(ilsvrc_root_dir, 'ImageSets/DET')
 
 image_dir = osp.join(data_root_dir, task)
 annotation_dir = osp.join(anno_root_dir, task)
@@ -28,11 +36,14 @@ if task == 'val2':
     annotation_dir = osp.join(anno_root_dir, 'val')
 
 image_with_anno_dir = osp.join(saving_root_dir, task)
-saving_dir = osp.join(saving_root_dir, task + '_' + ssd_version + '_' + caffe_iter)
+saving_dir = osp.join(saving_root_dir, task + '_' + ssd_version + '_iter' + caffe_iter + '_img60000')
 
 det_200_labelmap_file = 'det_200_labelmap.txt'
 image_name_list = task + '.txt'
-out_file = 'ssd_detect_outfile_' + task + '.txt'
+imageset_file_name = osp.join(imageset_root_dir, task + '.txt')
+out_file_name = 'ssd_detect_outfile_' + task + '_' + caffe_iter + '.txt'
+score_file_dir = osp.join(CURDIR, 'SSD_500x500_score')
+score_file_name = osp.join(score_file_dir, task + '_ssd500_results_' + caffe_iter + '.txt')
 
 def parse_xml(filename):
     """ Parse a ILSVRC 2015 DET xml file """
@@ -62,6 +73,22 @@ def read_det_200_labelmap(filename):
         labelidx_to_name[label_idx] = {'name': name, 'display_name': display_name}
     return name_to_labelidx, labelidx_to_name
 
+def make_image_set(filename):
+    imageset_file = open(filename, 'r')
+    image_name_idx_pairs = [line.rstrip('\n') for line in imageset_file]
+    imageset_file.close()
+    image_set = {}
+    for idx, pair in enumerate(image_name_idx_pairs):
+        name, idx = pair.split(' ')
+        image_set[int(idx)] = name
+        #pdb.set_trace()
+    return image_set
+
+def parse_imageindex_to_imagepath(image_set, image_idx):
+    image_name = image_set[image_idx]
+    image_path = osp.join(data_root_dir, image_name + '.JPEG')
+    return image_path
+
 if __name__ == '__main__':
     print image_with_anno_dir
     print saving_dir
@@ -70,6 +97,7 @@ if __name__ == '__main__':
     if osp.exists(saving_dir) == False:
         os.mkdir(saving_dir)
 
+    image_set = make_image_set(imageset_file_name)
     det_200_name_to_labelmap, det_200_labelmap_to_name = read_det_200_labelmap(det_200_labelmap_file)
 
     image_list_file = open(image_name_list, 'r')
@@ -111,13 +139,23 @@ if __name__ == '__main__':
             #    break
 
     if draw_pred_box:
-        predict_file = open(out_file, 'r')
-        list_items = [line.rstrip('\n') for line in predict_file]
-        predict_file.close()
+        list_items = []
+        if use_score_result:
+            score_file = open(score_file_name, 'r')
+            list_items = [line.rstrip('\n') for line in score_file]
+            score_file.close()
+        else:
+            predict_file = open(out_file_name, 'r')
+            list_items = [line.rstrip('\n') for line in predict_file]
+            predict_file.close()
 
         # draw predicted bbox
         for idx, item in enumerate(list_items):
-            image_path, label_idx, score, xmin0, ymin0, xmax0, ymax0 = item.split(' ')
+            if use_score_result:
+                image_idx, label_idx, score, xmin0, ymin0, xmax0, ymax0 = item.split(' ')
+            else:
+                image_path, label_idx, score, xmin0, ymin0, xmax0, ymax0 = item.split(' ')
+            image_path = parse_imageindex_to_imagepath(image_set, int(image_idx))
             image_name = image_path.split('/')[-1]
 
             print('Create predicted bbox image {} / {}: {}'.format(idx+1, len(list_items), image_name))
@@ -147,5 +185,5 @@ if __name__ == '__main__':
                         (xmin, ymin+20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, RED)
             cv2.imwrite(image_saving_path, image)
 
-            #if idx > 2:
+            #if idx > 100:
             #    break

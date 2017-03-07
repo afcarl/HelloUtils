@@ -12,12 +12,12 @@ def getmd5(filename):
 
 def find(s, ch):
     return [i for i, ltr in enumerate(s) if ltr == ch]
-    
+
 def getNewFile(oldfile):
     index = find(oldfile,'.')[-1]
     newfile = oldfile[:index] + '(1)' + oldfile[index:]
     return newfile
-    
+
 def readConfigFile(filename):
     f = open(filename, 'r')
     path_list = [line.rstrip('\n') for line in f]
@@ -32,6 +32,7 @@ def run(path_list):
     start = now()
 
     for path in path_list:
+        print('Processing dir: {}'.format(path))
         for file in os.listdir(path):
             total_file += 1
             real_path = os.path.join(path, file)
@@ -46,7 +47,7 @@ def run(path_list):
                         print('Remove {}'.format(real_path))
                         os.remove(real_path)
                         total_delete += 1
-                        
+
                         # my personal setting: only remove file name as 'aaa(1).jpg'
                         '''
                         target_file = getNewFile(file)
@@ -65,7 +66,7 @@ def run(path_list):
     print('Total files:   {}'.format(total_file))
     print('Remove files:  {}'.format(total_delete))
     print('Time consumed: {} seconds'.format(time_last))
-     
+
 if __name__ == '__main__':
     if len(sys.argv[1]) < 2:
         print('Not input file specified.')

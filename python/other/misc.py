@@ -54,3 +54,7 @@ sorted(a, key=itemgetter(3))
 import sys
 sys.path.insert(0, '/path/to/anaconda2/lib/python2.7/site-packages/')
 import cv2
+
+# sorting arrays in numpy by column
+# [:,1] indicates the second column of a
+a[a[:,1].argsort()]

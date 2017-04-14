@@ -1,3 +1,5 @@
+# http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#pre-installation-actions
+
 # Verify You Have a CUDA-Capable GPU
 echo -e "Verify CUDA-Capable GPU:"
 echo -e "###############################################"

@@ -58,3 +58,8 @@ import cv2
 # sorting arrays in numpy by column
 # [:,1] indicates the second column of a
 a[a[:,1].argsort()]
+
+# Sort Python dict by value
+
+sorted(dict.items(), lambda x, y: cmp(x[1], y[1]))
+sorted(dict.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)

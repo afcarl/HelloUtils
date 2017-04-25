@@ -15,11 +15,17 @@ echo -e "###############################################\n"
 # Verify the System Has gcc Installed
 echo -e "Verify GCC version:"
 echo -e "###############################################"
-gcc --version
+gcc --version | grep gcc
 echo -e "###############################################\n"
 
-#Verify the System has the Correct Kernel Headers and Development Packages Installed
+# Verify the System has the Correct Kernel Headers and Development Packages Installed
 echo -e "Verify kernel headers & development packages:"
 echo -e "###############################################"
 uname -r
+echo -e "###############################################\n"
+
+# Check GLIBC version
+echo -e "Check GLIBC version:"
+echo -e "###############################################"
+ldd --version | grep ldd
 echo -e "###############################################\n"
